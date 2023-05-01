@@ -8,6 +8,7 @@ import { useKeenSlider } from 'keen-slider/react'
 import { Container, Product } from "../styles/pages/home";
 
 import 'keen-slider/keen-slider.min.css'
+import { Handbag } from "@phosphor-icons/react";
 
 interface HomeProps {
   products: {
@@ -39,8 +40,14 @@ export default function Home({ products }: HomeProps) {
               <Image src={product.imageUrl} width={520} height={480} alt="#" />
 
               <footer>
-                <strong>{product.name}</strong>
-                <span>{product.price}</span>
+                <div>
+                  <strong>{product.name}</strong>
+                  <span>{product.price}</span>
+                </div>
+
+                <button type="button">
+                  <Handbag size={24} weight="bold" />
+                </button>
               </footer>
             </Product>
           </Link>

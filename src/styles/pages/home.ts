@@ -39,14 +39,34 @@ export const Product = styled('div', {
     alignItems: 'center',
     justifyContent: 'space-between',
 
-    'strong': {
-      fontSize: '$lg'
+    div: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+
+    'strong': {     
+      fontSize: '$lg',
+      color: 'white'
     },
 
     span: {
       fontSize: '$xl',
       fontWeight: 'bold',
       color: '$green300'
+    },
+
+    button: {
+      width: '3rem',
+      height: '3rem',
+      border: 'none',
+      borderRadius: 6,
+      color: 'white',
+      background: '$green500',
+      cursor: 'pointer',
+
+      '&:hover': {
+        background: '$green300',
+      }
     }
   },
 
