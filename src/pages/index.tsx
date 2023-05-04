@@ -1,3 +1,4 @@
+import { MouseEvent, useContext } from "react";
 import { GetStaticProps } from "next";
 import Image from "next/image";
 import Link from 'next/link'
@@ -6,20 +7,27 @@ import Stripe from "stripe";
 import { stripe } from "../lib/stripe";
 import { useKeenSlider } from 'keen-slider/react'
 import { Container, Product } from "../styles/pages/home";
+import { CartButton } from "../components/CartButton";
+import { CartContext, IProduct } from "../contexts/CartContent";
 
 import 'keen-slider/keen-slider.min.css'
-import { Handbag } from "@phosphor-icons/react";
 
 interface HomeProps {
-  products: {
-    id: string
-    name: string
-    imageUrl: string
-    price: string
-  }[]
+  products: IProduct[]
 }
 
 export default function Home({ products }: HomeProps) {
+  const { addToCart, checkIfProductAlreadyExists } = useContext(CartContext)
+
+  function handleAddProductToCart(e: MouseEvent<HTMLButtonElement>, product: IProduct) {
+    e.preventDefault()
+    const productAlreadyExists = checkIfProductAlreadyExists(product.id)
+
+    if (!productAlreadyExists) {
+      addToCart(product)
+    }
+  }
+
   const [sliderRef] = useKeenSlider({
     slides: {
       perView: 3,
@@ -33,9 +41,9 @@ export default function Home({ products }: HomeProps) {
         <title>Home | Ignite Shop</title>
       </Head>
 
-      <Container ref={sliderRef} className="keen-slider">
+      <Container ref={sliderRef} className="keen-slider container">
         {products.map(product => (
-          <Link href={`/product/${product.id}`} key={product.id} prefetch={false}>
+          <Link href={`/product/${product.id}`} key={product.id} prefetch={false} passHref>
             <Product className="keen-slider__slide">
               <Image src={product.imageUrl} width={520} height={480} alt="#" />
 
@@ -45,14 +53,16 @@ export default function Home({ products }: HomeProps) {
                   <span>{product.price}</span>
                 </div>
 
-                <button type="button">
-                  <Handbag size={24} weight="bold" />
-                </button>
+                <CartButton 
+                  disabled={checkIfProductAlreadyExists(product.id)} 
+                  onClick={(e) => handleAddProductToCart(e, product)}
+                  type="button"
+                  color="green" 
+                />
               </footer>
             </Product>
           </Link>
         ))}
-
       </Container>
     </>
   )
@@ -74,6 +84,8 @@ export const getStaticProps: GetStaticProps = async () => {
         currency: 'BRL',
         style: 'currency'
       }).format(price.unit_amount! / 100),
+      numberPrice: price.unit_amount! / 100,
+      defaultPriceId: price.id
     }
   })
 
